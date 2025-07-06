@@ -9,6 +9,7 @@ from langgraph.prebuilt import tools_condition
 from langchain_openai import ChatOpenAI
 
 from retriever import guest_info_tool
+from tools import search_tool, weather_info_tool, hub_stats_tool
 
 load_dotenv()
 
@@ -18,7 +19,7 @@ chat = ChatOpenAI(
     # Optional: temperature, max_tokens, etc.
 )
 
-tools = [guest_info_tool]
+tools = [guest_info_tool, search_tool, weather_info_tool, hub_stats_tool]
 chat_with_tools = chat.bind_tools(tools)
 
 class AgentState(TypedDict):
@@ -43,8 +44,19 @@ builder.add_conditional_edges(
 builder.add_edge("tools", "assistant")
 alfred = builder.compile()
 
-messages = [HumanMessage(content="Tell me about our guest named 'Lady Ada Lovelace'.")]
-response = alfred.invoke({"messages": messages})
+memory=[]
+try:
+    while True:
+        user_message = input("What do you want to ask Alfred?\n")
+        memory.append(HumanMessage(content=user_message))
+        response = alfred.invoke({"messages": memory})
+        memory += response["messages"]
 
-print("Alfred's Response:")
-print(response["messages"][-1].content)
+        print("Alfred's Response:")
+        print(response["messages"][-1].content)
+        print("---- Debug info ----")
+        for i, m in enumerate(response["messages"]):
+            print(f"Message {i}: {m.content}")
+        print("---- Debug info ended ----")
+except EOFError:
+    print("\nExiting on EOF (Ctrl+D)")
