@@ -1,2 +1,2 @@
-agentic_rag/.env
-/agentic_rag/__pycache__
+*/.env
+*/__pycache__

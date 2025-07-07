@@ -12,7 +12,7 @@ def get_weather_info(location: str) -> str:
     weather_conditions = [
         {"condition": "Rainny", "temp_c": 15},
         {"condition": "Clear", "temp_c": 25},
-        {"condition": "Windy", "tmep_c": 20},
+        {"condition": "Windy", "temp_c": 20},
     ]
 
     data = random.choice(weather_conditions)
